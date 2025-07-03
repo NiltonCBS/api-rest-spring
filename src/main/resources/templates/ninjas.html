@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Ninjas</title>
+</head>
+<body>
+<h1>Lista de Ninjas da Vila</h1>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Nome</th>
+    <th>CPF</th>
+    <th>Email</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="ninja : ${ninjas}">
+    <td th:text="${ninja.id}">1</td>
+    <td th:text="${ninja.nome}">Naruto Uzumaki</td>
+    <td th:text="${ninja.cpf}">000.000.000-00</td>
+    <td th:text="${ninja.email}">naruto@konoha.com</td>
+  </tr>
+  </tbody>
+</table>
+
+<br>
+<a th:href="@{/ui/cadastrar}">Cadastrar</a>
+<a th:href="@{/ui/index}">Voltar para o início</a>
+</body>
+</html>
