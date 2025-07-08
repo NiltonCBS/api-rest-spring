@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Missão</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .mission-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .mission-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 1.1em;
+        }
+
+        .actions {
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(149, 165, 166, 0.3);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+            padding: 35px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #f39c12;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #f39c12;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+        }
+
+        .classification-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .classification-option {
+            position: relative;
+        }
+
+        .classification-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .classification-label {
+            display: block;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 14px;
+        }
+
+        .classification-option input[type="radio"]:checked + .classification-label {
+            border-color: #f39c12;
+            background: #f39c12;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(243, 156, 18, 0.3);
+        }
+
+        .classification-s + .classification-label {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .classification-a + .classification-label {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            border-color: #f39c12;
+        }
+
+        .classification-b + .classification-label {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border-color: #3498db;
+        }
+
+        .classification-c + .classification-label {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .classification-d + .classification-label {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            border-color: #95a5a6;
+        }
+
+        .status-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .status-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .status-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .status-label {
+            display: block;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .status-option input[type="radio"]:checked + .status-label {
+            border-color: #f39c12;
+            background: #f39c12;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(243, 156, 18, 0.3);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #95a5a6;
+            color: #95a5a6;
+        }
+
+        .btn-outline:hover {
+            background: #95a5a6;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(149, 165, 166, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3);
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .classification-info {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .classification-info h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .classification-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .classification-info li {
+            padding: 5px 0;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .classification-info li strong {
+            color: #2c3e50;
+        }
+
+        .current-values {
+            background: #e8f5e8;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .current-values h3 {
+            color: #155724;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .current-value-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .current-value-item strong {
+            color: #2c3e50;
+        }
+
+        .current-classification {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .current-classification.s {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .current-classification.a {
+            background: #f39c12;
+            color: white;
+        }
+
+        .current-classification.b {
+            background: #3498db;
+            color: white;
+        }
+
+        .current-classification.c {
+            background: #27ae60;
+            color: white;
+        }
+
+        .current-classification.d {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .current-status {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .current-status.active {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .current-status.inactive {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            transform: scale(0.7) translateY(-50px);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.3;
+        }
+
+        .modal-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .modal-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            display: block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .modal-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .modal-subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-message {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-mission-info {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .modal-mission-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .modal-mission-id {
+            font-size: 1em;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .modal-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 120px;
+        }
+
+        .modal-btn-cancel {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(149, 165, 166, 0.3);
+        }
+
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(231, 76, 60, 0.3);
+        }
+
+        .modal-btn-save {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+
+        .modal-btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(243, 156, 18, 0.3);
+        }
+
+        .modal-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #856404;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header, .actions, .content {
+                padding: 20px;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+
+            .classification-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .status-container {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                max-width: 95%;
+                margin: 20px;
+            }
+
+            .modal-header, .modal-body {
+                padding: 20px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .modal-btn {
+                width: 100%;
+            }
+        }
+
+        /* Animações */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .form-group {
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <span class="mission-icon">✏️</span>
+            <h1>Editar Missão</h1>
+            <p>Modificar informações da missão</p>
+            <div class="mission-info">
+                <strong>ID:</strong> <span th:text="${missao.id}">1</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+        <a href="/ui/missao/listar" class="btn btn-secondary">
+            📋 Listar Missões
+        </a>
+        <a href="/ui/index" class="btn btn-secondary">
+            🏠 Início
+        </a>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Current Values Display -->
+        <div class="current-values">
+            <h3>
+                📊 Valores Atuais
+            </h3>
+            <div class="current-value-item">
+                <strong>Nome:</strong>
+                <span th:text="${missao.nome}">Nome da Missão</span>
+            </div>
+            <div class="current-value-item">
+                <strong>Classificação:</strong>
+                <span class="current-classification"
+                      th:class="'current-classification ' + ${#strings.toLowerCase(missao.classificacao)}"
+                      th:text="${missao.classificacao}">S</span>
+            </div>
+            <div class="current-value-item">
+                <strong>Status:</strong>
+                <span class="current-status"
+                      th:class="${missao.status} ? 'current-status active' : 'current-status inactive'"
+                      th:text="${missao.status} ? 'Ativa' : 'Inativa'">Ativa</span>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div class="alert alert-warning">
+                ⚠️ <strong>Atenção:</strong> Você está editando uma missão existente. Certifique-se de que as alterações estão corretas antes de salvar.
+            </div>
+
+            <form th:action="@{/ui/missao/atualizar}" method="post" th:object="${missao}">
+                <!-- Hidden field para ID -->
+                <input type="hidden" th:field="*{id}">
+
+                <div class="form-group">
+                    <label for="nome" class="form-label">Nome da Missão</label>
+                    <input type="text"
+                           class="form-control"
+                           id="nome"
+                           th:field="*{nome}"
+                           placeholder="Digite o nome da missão..."
+                           required>
+                    <div class="help-text">
+                        Escolha um nome descritivo para identificar facilmente a missão.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Classificação da Missão</label>
+                    <div class="classification-grid">
+                        <div class="classification-option">
+                            <input type="radio"
+                                   id="classificacao-s"
+                                   th:field="*{classificacao}"
+                                   value="S"
+                                   class="classification-s">
+                            <label for="classificacao-s" class="classification-label">
+                                S ⭐
+                            </label>
+                        </div>
+                        <div class="classification-option">
+                            <input type="radio"
+                                   id="classificacao-a"
+                                   th:field="*{classificacao}"
+                                   value="A"
+                                   class="classification-a">
+                            <label for="classificacao-a" class="classification-label">
+                                A 🔥
+                            </label>
+                        </div>
+                        <div class="classification-option">
+                            <input type="radio"
+                                   id="classificacao-b"
+                                   th:field="*{classificacao}"
+                                   value="B"
+                                   class="classification-b">
+                            <label for="classificacao-b" class="classification-label">
+                                B ⚡
+                            </label>
+                        </div>
+                        <div class="classification-option">
+                            <input type="radio"
+                                   id="classificacao-c"
+                                   th:field="*{classificacao}"
+                                   value="C"
+                                   class="classification-c">
+                            <label for="classificacao-c" class="classification-label">
+                                C ✨
+                            </label>
+                        </div>
+                        <div class="classification-option">
+                            <input type="radio"
+                                   id="classificacao-d"
+                                   th:field="*{classificacao}"
+                                   value="D"
+                                   class="classification-d">
+                            <label for="classificacao-d" class="classification-label">
+                                D 📝
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="classification-info">
+                        <h4>Guia de Classificações:</h4>
+                        <ul>
+                            <li><strong>S:</strong> Missões extremamente perigosas, apenas para ninjas elite</li>
+                            <li><strong>A:</strong> Missões de alta dificuldade, requer ninjas experientes</li>
+                            <li><strong>B:</strong> Missões de dificuldade média, ninjas intermediários</li>
+                            <li><strong>C:</strong> Missões de baixa dificuldade, ninjas iniciantes</li>
+                            <li><strong>D:</strong> Missões básicas, treinamento e tarefas simples</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Status da Missão</label>
+                    <div class="status-container">
+                        <div class="status-option">
+                            <input type="radio"
+                                   id="status-ativa"
+                                   th:field="*{status}"
+                                   value="true">
+                            <label for="status-ativa" class="status-label">
+                                ✅ Ativa
+                            </label>
+                        </div>
+                        <div class="status-option">
+                            <input type="radio"
+                                   id="status-inativa"
+                                   th:field="*{status}"
+                                   value="false">
+                            <label for="status-inativa" class="status-label">
+                                ❌ Inativa
+                            </label>
+                        </div>
+                    </div>
+                    <div class="help-text">
+                        Missões ativas estão disponíveis para aceite pelos ninjas.
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/ui/missao/listarmissao" class="btn btn-outline">
+                        ↩️ Cancelar
+                    </a>
+                    <a th:href="@{/ui/missao/excluir/{id}(id=${missao.id})}"
+                       class="btn btn-danger"
+                       onclick="return false;"
+                       data-action="delete">
+                        🗑️ Excluir
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        💾 Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação para Exclusão -->
+<div id="deleteModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-header-content">
+                <span class="modal-icon">🗑️</span>
+                <h2 class="modal-title">Confirmar Exclusão</h2>
+                <p class="modal-subtitle">Esta ação não pode ser desfeita</p>
+            </div>
+        </div>
+        <div class="modal-body">
+            <p class="modal-message">
+                Você está prestes a excluir permanentemente esta missão do sistema.
+            </p>
+            <div class="modal-mission-info">
+                <div class="modal-mission-name" th:text="${missao.nome}">Nome da Missão</div>
+                <div class="modal-mission-id">ID: <span th:text="${missao.id}">1</span></div>
+            </div>
+            <div class="modal-warning">
+                ⚠️ Todos os dados relacionados a esta missão serão perdidos permanentemente.
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">
+                    Cancelar
+                </button>
+                <button type="button" class="modal-btn modal-btn-confirm" onclick="confirmDelete()">
+                    Confirmar Exclusão
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Modal de confirmação para exclusão
+    function openDeleteModal() {
+        document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    function confirmDelete() {
+        const deleteUrl = document.querySelector('[data-action="delete"]').href;
+        window.location.href = deleteUrl;
+    }
+
+    // Event listener para botão de excluir
+    document.querySelector('[data-action="delete"]').addEventListener('click', function(e) {
+        e.preventDefault();
+        openDeleteModal();
+    });
+
+    // Fechar modal ao clicar fora
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+
+    // Fechar modal com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDeleteModal();
+        }
+    });
+
+    // Animações de entrada
+    document.addEventListener('DOMContentLoaded', function() {
+        const formGroups = document.querySelectorAll('.form-group');
+        formGroups.forEach((group, index) => {
+            group.style.animationDelay = `${0.1 * (index + 1)}s`;
+        });
+    });
+</script>
+
+</body>
+</html>

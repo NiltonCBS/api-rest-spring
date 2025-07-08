@@ -1,10 +1,392 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Ninja</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        .ninja-icon {
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="text"], input[type="email"], input[type="hidden"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input[type="hidden"] {
+            display: none;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus {
+            outline: none;
+            border-color: #f39c12;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 18px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(243, 156, 18, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 15px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(108, 117, 125, 0.3);
+            text-decoration: none;
+            color: white;
+        }
+
+        .back-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+
+        .cpf-mask {
+            font-family: monospace;
+        }
+
+        .edit-badge {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        /* Animações */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .form-group {
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .submit-btn { animation-delay: 0.5s; }
+        .back-btn { animation-delay: 0.6s; }
+    </style>
 </head>
 <body>
+<div class="container">
+    <div class="ninja-icon">✏️</div>
+    <div class="edit-badge">Modo Edição</div>
+    <h1>Editar Ninja</h1>
 
+    <div class="success-message" id="successMessage" th:if="${mensagem}">
+        <span th:text="${mensagem}"></span>
+    </div>
+
+    <form th:action="@{/ui/atualizar}" method="post" th:object="${ninja}" id="ninjaForm">
+        <!-- Campo oculto para o ID -->
+        <input type="hidden" name="id" th:field="*{id}" />
+
+        <div class="form-group">
+            <label for="nome">Nome Completo</label>
+            <div class="input-wrapper">
+                <input type="text" name="nome" id="nome" th:field="*{nome}"
+                       placeholder="Digite o nome completo do ninja" required/>
+                <span class="input-icon">👤</span>
+            </div>
+            <div class="error-message" id="nomeError"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="cpf">CPF</label>
+            <div class="input-wrapper">
+                <input type="text" name="cpf" id="cpf" th:field="*{cpf}"
+                       placeholder="000.000.000-00" maxlength="14" class="cpf-mask" required/>
+                <span class="input-icon">🆔</span>
+            </div>
+            <div class="error-message" id="cpfError"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-wrapper">
+                <input type="email" name="email" id="email" th:field="*{email}"
+                       placeholder="ninja@email.com" required/>
+                <span class="input-icon">📧</span>
+            </div>
+            <div class="error-message" id="emailError"></div>
+        </div>
+
+        <button type="submit" class="submit-btn">
+            💾 Salvar Alterações
+        </button>
+
+        <a href="/ui/listarninjas" class="back-btn">
+            ← Cancelar e Voltar
+        </a>
+    </form>
+</div>
+
+<script>
+    // Máscara para CPF
+    document.getElementById('cpf').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        e.target.value = value;
+    });
+
+    // Validação do formulário
+    document.getElementById('ninjaForm').addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Validar nome
+        const nome = document.getElementById('nome').value.trim();
+        if (nome.length < 2) {
+            showError('nomeError', 'Nome deve ter pelo menos 2 caracteres');
+            isValid = false;
+        } else {
+            hideError('nomeError');
+        }
+
+        // Validar CPF
+        const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+        if (cpf.length !== 11 || !isValidCPF(cpf)) {
+            showError('cpfError', 'CPF inválido');
+            isValid = false;
+        } else {
+            hideError('cpfError');
+        }
+
+        // Validar email
+        const email = document.getElementById('email').value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showError('emailError', 'Email inválido');
+            isValid = false;
+        } else {
+            hideError('emailError');
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+
+    function showError(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        errorElement.parentElement.querySelector('input').style.borderColor = '#e74c3c';
+    }
+
+    function hideError(elementId) {
+        const errorElement = document.getElementById(elementId);
+        errorElement.style.display = 'none';
+        errorElement.parentElement.querySelector('input').style.borderColor = '#e1e5e9';
+    }
+
+    // Validação de CPF
+    function isValidCPF(cpf) {
+        if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+        let sum = 0;
+        for (let i = 0; i < 9; i++) {
+            sum += parseInt(cpf[i]) * (10 - i);
+        }
+        let remainder = (sum * 10) % 11;
+        if (remainder === 10 || remainder === 11) remainder = 0;
+        if (remainder !== parseInt(cpf[9])) return false;
+
+        sum = 0;
+        for (let i = 0; i < 10; i++) {
+            sum += parseInt(cpf[i]) * (11 - i);
+        }
+        remainder = (sum * 10) % 11;
+        if (remainder === 10 || remainder === 11) remainder = 0;
+        return remainder === parseInt(cpf[10]);
+    }
+
+    // Mostrar mensagem de sucesso se existir
+    const successMessage = document.getElementById('successMessage');
+    if (successMessage && successMessage.textContent.trim()) {
+        successMessage.style.display = 'block';
+        setTimeout(() => {
+            successMessage.style.display = 'none';
+        }, 5000);
+    }
+
+    // Aplicar máscara ao CPF se já estiver preenchido
+    document.addEventListener('DOMContentLoaded', function() {
+        const cpfInput = document.getElementById('cpf');
+        if (cpfInput.value) {
+            const event = new Event('input', { bubbles: true });
+            cpfInput.dispatchEvent(event);
+        }
+    });
+</script>
 </body>
 </html>

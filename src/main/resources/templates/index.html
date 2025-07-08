@@ -1,15 +1,511 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Sistema Vila da Folha - Página Inicial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="50" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="90" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .village-logo {
+            font-size: 4em;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-title {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            opacity: 0.9;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 1px;
+        }
+
+        .main-content {
+            padding: 60px 40px;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .welcome-title {
+            font-size: 2.2em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .welcome-description {
+            font-size: 1.1em;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .module-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+
+        .module-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+
+        .module-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .module-card:hover .module-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .module-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-decoration: none;
+        }
+
+        .module-description {
+            color: #666;
+            font-size: 1em;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .module-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+
+        .module-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .module-button:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .module-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .module-card.disabled:hover {
+            transform: none;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .coming-soon {
+            background: #f8f9fa;
+            color: #6c757d;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .stats-section {
+            background: #f8f9fa;
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+
+            .header {
+                padding: 40px 20px;
+            }
+
+            .main-title {
+                font-size: 2.2em;
+            }
+
+            .village-logo {
+                font-size: 3em;
+            }
+
+            .main-content {
+                padding: 40px 20px;
+            }
+
+            .modules-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .module-card {
+                padding: 30px 20px;
+            }
+
+            .stats-section {
+                padding: 30px 20px;
+            }
+
+            .footer {
+                padding: 20px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .module-card {
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .module-card:nth-child(1) { animation-delay: 0.1s; }
+        .module-card:nth-child(2) { animation-delay: 0.2s; }
+        .module-card:nth-child(3) { animation-delay: 0.3s; }
+        .module-card:nth-child(4) { animation-delay: 0.4s; }
+    </style>
 </head>
 <body>
+<div class="container">
+    <header class="header">
+        <div class="village-logo">🍃</div>
+        <h1 class="main-title">Sistema Vila da Folha</h1>
+        <p class="subtitle">Plataforma de Gerenciamento Ninja</p>
+    </header>
 
-<h1>Sistema de vila da folha</h1>
-<h2><a th:href="@{/ui/listarninjas}">Ninja</a></h2>
-<h2>Missao</h2>
+    <main class="main-content">
+        <section class="welcome-section">
+            <h2 class="welcome-title">Bem-vindo ao Sistema da Vila</h2>
+            <p class="welcome-description">
+                Gerencie todos os aspectos da sua vila ninja de forma eficiente e moderna.
+                Controle ninjas, missões e muito mais em uma plataforma integrada.
+            </p>
+        </section>
 
+        <section class="modules-grid">
+            <div class="module-card">
+                <a th:href="@{/ui/listarninjas}" class="module-link">
+                    <span class="module-icon">🥷</span>
+                    <h3 class="module-title">Gestão de Ninjas</h3>
+                    <p class="module-description">
+                        Cadastre, visualize e gerencie todos os ninjas da sua vila.
+                        Controle informações pessoais, habilidades e status.
+                    </p>
+                    <button class="module-button">Acessar Ninjas</button>
+                </a>
+            </div>
+
+            <div class="module-card">
+                <a th:href="@{/ui/missao/listarmissao}" class="module-link">
+                <span class="module-icon">📋</span>
+                <h3 class="module-title">Sistema de Missões</h3>
+                <p class="module-description">
+                    Crie, atribua e monitore missões para os ninjas da vila.
+                    Controle dificuldades, recompensas e progresso.
+                </p>
+                    <button class="module-button">Acessar Missões</button>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">🍃 Vila da Folha</div>
+        </div>
+    </footer>
+</div>
+
+<script>
+    // Adicionar efeito de parallax no header
+    window.addEventListener('scroll', function() {
+        const scrolled = window.pageYOffset;
+        const header = document.querySelector('.header');
+        const rate = scrolled * -0.5;
+
+        if (header) {
+            header.style.transform = `translateY(${rate}px)`;
+        }
+    });
+
+    // Adicionar contador animado para estatísticas
+    function animateCounters() {
+        const counters = document.querySelectorAll('.stat-number');
+
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target')) || 0;
+            const increment = target / 100;
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += increment;
+                counter.textContent = Math.floor(current);
+
+                if (current >= target) {
+                    clearInterval(timer);
+                    counter.textContent = target;
+                }
+            }, 20);
+        });
+    }
+
+    // Observador para animar quando entrar na tela
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    // Observar módulos para animação
+    document.addEventListener('DOMContentLoaded', function() {
+        const moduleCards = document.querySelectorAll('.module-card');
+
+        moduleCards.forEach(card => {
+            observer.observe(card);
+        });
+
+        // Adicionar tooltip para módulos em breve
+        const disabledCards = document.querySelectorAll('.module-card.disabled');
+        disabledCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Criar tooltip temporário
+                const tooltip = document.createElement('div');
+                tooltip.textContent = 'Este módulo estará disponível em breve!';
+                tooltip.style.cssText = `
+                    position: fixed;
+                    background: #333;
+                    color: white;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    font-size: 14px;
+                    z-index: 1000;
+                    pointer-events: none;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                `;
+
+                document.body.appendChild(tooltip);
+
+                const rect = card.getBoundingClientRect();
+                tooltip.style.left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + 'px';
+                tooltip.style.top = rect.top - tooltip.offsetHeight - 10 + 'px';
+
+                setTimeout(() => tooltip.style.opacity = '1', 10);
+
+                setTimeout(() => {
+                    tooltip.style.opacity = '0';
+                    setTimeout(() => document.body.removeChild(tooltip), 300);
+                }, 2000);
+            });
+        });
+    });
+</script>
 </body>
 </html>

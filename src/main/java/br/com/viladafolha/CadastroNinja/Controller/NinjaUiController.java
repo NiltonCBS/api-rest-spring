@@ -5,16 +5,13 @@ import br.com.viladafolha.CadastroNinja.Service.NinjaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
 @RequestMapping("/ui")
-public class UiController {
+public class NinjaUiController {
 
     @Autowired
     private NinjaService ninjaService;
@@ -40,6 +37,25 @@ public class UiController {
     @PostMapping("/salvar")
     public String salvarNinja(@ModelAttribute NinjaEntity ninja){
         ninjaService.cadastrar(ninja);
+        return "redirect:/ui/listarninjas";
+    }
+
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEdicao(@PathVariable Long id, Model model){
+        NinjaEntity ninja = ninjaService.Pesquisar(id);
+        model.addAttribute("ninja", ninja);
+        return "detalhesninja";
+    }
+
+    @PostMapping("/atualizar")
+    public String atualizarNinja(@ModelAttribute NinjaEntity ninja){
+        ninjaService.Altera(ninja.getId(), ninja);
+        return "redirect:/ui/listarninjas";
+    }
+
+    @GetMapping("/excluir/{id}")
+    public String excluirNinja(@PathVariable Long id){
+        ninjaService.Deletar(id);
         return "redirect:/ui/listarninjas";
     }
 }
